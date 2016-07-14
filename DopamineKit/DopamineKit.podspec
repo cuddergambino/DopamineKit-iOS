@@ -35,7 +35,7 @@ s.homepage         = "https://github.com/DopamineLabs/DopamineAPI_Swift-CocoaPod
 #  Popular ones are 'MIT', 'BSD' and 'Apache License, Version 2.0'.
 #
 
-s.license      = { :type => "MIT", :file => "LICENSE" }
+s.license      = { :type => "MIT", :file => "LICENSE.txt" }
 
 
 # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
