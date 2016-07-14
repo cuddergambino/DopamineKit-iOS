@@ -1,0 +1,13 @@
+{
+  'version': 0,
+  'case-sensitive': 'false',
+  'roots': [{
+    'type': 'directory',
+    'name': '/Users/cuddergambino/Code/Dopamine/DopamineKit-iOS-Cocoapod/DopamineKit/Example/build/Debug-iphoneos/DopamineKit/DopamineKit.framework/Modules'
+    'contents': [{
+      'type': 'file',
+      'name': 'module.modulemap',
+      'external-contents': '/Users/cuddergambino/Code/Dopamine/DopamineKit-iOS-Cocoapod/DopamineKit/Example/build/Pods.build/Debug-iphoneos/DopamineKit.build/unextended-module.modulemap',
+    }]
+  }]
+}

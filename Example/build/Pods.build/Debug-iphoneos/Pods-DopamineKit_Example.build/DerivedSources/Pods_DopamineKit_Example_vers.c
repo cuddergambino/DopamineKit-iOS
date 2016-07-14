@@ -1,0 +1,1 @@
+ const unsigned char Pods_DopamineKit_ExampleVersionString[] __attribute__ ((used)) = "@(#)PROGRAM:Pods_DopamineKit_Example  PROJECT:Pods-1" "\n"; const double Pods_DopamineKit_ExampleVersionNumber __attribute__ ((used)) = (double)1.;
