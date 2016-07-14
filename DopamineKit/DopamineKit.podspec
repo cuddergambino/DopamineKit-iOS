@@ -25,7 +25,7 @@ Make your iOS app habit-forming using the DopamineAPI.
 This packages provides a framework for interacting with the DopamineAPI from a Cocoa based iOS application. After you have received your API key and configured the actions and reinforcements relevant to your app on the Dopamine Developer Dashboard, you may use this framework to place 'tracking', and 'reinforcement' calls from inside your app that will communicate directly with the DopamineAPI.
 DESC
 
-s.homepage         = "https://github.com/DopamineLabs/DopamineAPI_Swift-CocoaPod"
+s.homepage         = "https://github.com/DopamineLabs/DopamineAPI_Swift-CocoaPod/tree/dev-akash"
 
 
 # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
