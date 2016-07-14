@@ -1,0 +1,6 @@
+framework module DopamineKit {
+  umbrella header "DopamineKit-umbrella.h"
+
+  export *
+  module * { export * }
+}
