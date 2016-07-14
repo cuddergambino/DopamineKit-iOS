@@ -7,7 +7,7 @@
 
 import UIKit
 
-private enum BannerState {
+internal enum BannerState {
     case Showing, Hidden, Gone
 }
 
@@ -145,7 +145,7 @@ public class Banner: UIView {
         return imageView
     }()
     
-    private var bannerState = BannerState.Hidden {
+    internal var bannerState = BannerState.Hidden {
         didSet {
             if bannerState != oldValue {
                 forceUpdates()
@@ -352,10 +352,10 @@ public class Banner: UIView {
     public func dismiss(oldStatusBarStyle: UIStatusBarStyle? = nil) {
         let (damping, velocity) = self.springiness.springValues
         UIView.animateWithDuration(animationDuration, delay: 0.0, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: .AllowUserInteraction, animations: {
-            self.bannerState = .Hidden
-            if let oldStatusBarStyle = oldStatusBarStyle {
-                UIApplication.sharedApplication().setStatusBarStyle(oldStatusBarStyle, animated: true)
-            }
+                self.bannerState = .Hidden
+                if let oldStatusBarStyle = oldStatusBarStyle {
+                    UIApplication.sharedApplication().setStatusBarStyle(oldStatusBarStyle, animated: true)
+                }
             }, completion: { finished in
                 self.bannerState = .Gone
                 self.removeFromSuperview()

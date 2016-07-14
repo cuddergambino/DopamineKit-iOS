@@ -110,5 +110,9 @@ public class CandyBar: Banner {
         )
     }
     
+    public func didShow() -> Bool{
+        return self.bannerState == BannerState.Gone
+    }
+    
     
 }

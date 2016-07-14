@@ -34,10 +34,10 @@
 		8446590B1D35A394002A9775 /* DopamineKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DopamineKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		844659101D35A394002A9775 /* DopamineKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DopamineKitTests.swift; sourceTree = "<group>"; };
 		844659121D35A394002A9775 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8446591B1D35A461002A9775 /* CandyBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CandyBar.swift; sourceTree = "<group>"; };
-		8446591C1D35A461002A9775 /* DopamineKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DopamineKit.swift; sourceTree = "<group>"; };
-		8446591D1D35A461002A9775 /* Banner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Banner.swift; sourceTree = "<group>"; };
-		844659211D35A6C3002A9775 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8446591B1D35A461002A9775 /* CandyBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CandyBar.swift; path = DopamineKit/CandyBar.swift; sourceTree = "<group>"; };
+		8446591C1D35A461002A9775 /* DopamineKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DopamineKit.swift; path = DopamineKit/DopamineKit.swift; sourceTree = "<group>"; };
+		8446591D1D35A461002A9775 /* Banner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Banner.swift; path = DopamineKit/Banner.swift; sourceTree = "<group>"; };
+		844659211D35A6C3002A9775 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = DopamineKit/Assets.xcassets; sourceTree = "<group>"; };
 		844659231D35A703002A9775 /* DopamineProperties.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = DopamineProperties.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -63,6 +63,8 @@
 		844658F71D35A394002A9775 = {
 			isa = PBXGroup;
 			children = (
+				844FAF881D36E8630014A9D6 /* Resources */,
+				844FAF871D36E85A0014A9D6 /* Sources */,
 				844659031D35A394002A9775 /* DopamineKit */,
 				8446590F1D35A394002A9775 /* DopamineKitTests */,
 				844659021D35A394002A9775 /* Products */,
@@ -81,11 +83,7 @@
 		844659031D35A394002A9775 /* DopamineKit */ = {
 			isa = PBXGroup;
 			children = (
-				844659211D35A6C3002A9775 /* Assets.xcassets */,
 				844659041D35A394002A9775 /* DopamineKit.h */,
-				8446591C1D35A461002A9775 /* DopamineKit.swift */,
-				8446591B1D35A461002A9775 /* CandyBar.swift */,
-				8446591D1D35A461002A9775 /* Banner.swift */,
 				844659061D35A394002A9775 /* Info.plist */,
 			);
 			path = DopamineKit;
@@ -99,6 +97,24 @@
 				844659121D35A394002A9775 /* Info.plist */,
 			);
 			path = DopamineKitTests;
+			sourceTree = "<group>";
+		};
+		844FAF871D36E85A0014A9D6 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				8446591C1D35A461002A9775 /* DopamineKit.swift */,
+				8446591B1D35A461002A9775 /* CandyBar.swift */,
+				8446591D1D35A461002A9775 /* Banner.swift */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		844FAF881D36E8630014A9D6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				844659211D35A6C3002A9775 /* Assets.xcassets */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
