@@ -1,6 +1,6 @@
 //
 //  Candy.swift
-//  DopamineKit
+//  A simple way to give users feedback and visual reinforcement.
 //
 //  Created by Akash Desai on 6/2/16.
 //  Copyright © 2016 DopamineLabs. All rights reserved.
@@ -8,9 +8,10 @@
 
 import Foundation
 
-/// Candy is an enumeration of icons that can appear on a CandyBar. Visit UseDopamine.com to see them all visually displayed
-@objc
-public enum Candy : Int{
+/// Candy is an icon that can appear on a CandyBar.
+/// Look at `DopamineKit/Resources/CandyIcons.xcassets` to see what each icon looks like.
+///
+@objc public enum Candy : Int{
     case None = 0, Certificate, Crown, Crown2, MedalStar, RibbonStar, Stars, Stopwatch, ThumbsUp, TrophyHand, TrophyStar, WreathStar
     
     private var DopeAssetName:String?{
@@ -31,16 +32,17 @@ public enum Candy : Int{
     }
 }
 
-@objc
-public class CandyBar: Banner {
+@objc public class CandyBar: Banner {
     
     /// A CandyBar with the provided `title`, `subtitle`, and an optional `image`, ready to be presented with `show()`.
     ///
-    /// - parameter title: The title of the banner. Defaults to `nil`.
-    /// - parameter subtitle: The subtitle of the banner. Defaults to `nil`.
-    /// - parameter image: The image on the left of the banner. Defaults to `nil`.
-    /// - parameter backgroundColor: The color of the banner's background view. Defaults to `UIColor.blackColor()`.
-    /// - parameter didTapBlock: An action to be called when the user taps on the banner. Defaults to `nil`.
+    /// - parameters:
+    ///     - title?: The title of the banner. Defaults to `nil`.
+    ///     - subtitle?: The subtitle of the banner. Defaults to `nil`.
+    ///     - image?: The image on the left of the banner. Defaults to `nil`.
+    ///     - backgroundColor?: The color of the banner's background view. Defaults to `UIColor.blackColor()`.
+    ///     - didTapBlock?: An action to be called when the user taps on the banner. Defaults to `nil`.
+    ///
     public required init(title: String? = nil, subtitle: String? = nil, image: UIImage? = nil, backgroundColor: UIColor = UIColor.blackColor(), didTapBlock: (() -> ())? = nil) {
     
         super.init(title: title, subtitle: subtitle, image: image, backgroundColor: backgroundColor, didTapBlock: didTapBlock)
@@ -49,14 +51,20 @@ public class CandyBar: Banner {
     
     /// A CandyBar with the provided `title`, `subtitle`, and an optional icon, ready to be presented with `show()`.
     ///
-    /// - parameter title: The title of the banner. Defaults to `nil`.
-    /// - parameter subtitle: The subtitle of the banner. Defaults to `nil`.
-    /// - parameter icon: The icon on the left of the banner. Defaults to .Stars
-    /// - parameter backgroundColor: The color of the banner's background view. Defaults to `UIColor.blackColor()`.
-    /// - parameter didTapBlock: An action to be called when the user taps on the banner. Defaults to `nil`.
+    /// - parameters:
+    ///     - title?: The title of the banner. Defaults to `nil`.
+    ///     - subtitle?: The subtitle of the banner. Defaults to `nil`.
+    ///     - icon?: An icon, from the `Candy` class, to be displayed on the left of a candybar. Defaults to `.Stars`
+    ///     - backgroundColor?: The color of the banner's background view. Defaults to `UIColor.blackColor()`.
+    ///     - didTapBlock?: An action to be called when the user taps on the banner. Defaults to `nil`.
+    ///
     public required init(title: String? = nil, subtitle: String? = nil, icon: Candy = .Stars, backgroundColor: UIColor = UIColor.blackColor(), didTapBlock: (() -> ())? = nil) {
-        let bundle = NSBundle(forClass: CandyBar.self)
-        let retrievedImage = UIImage(named: icon.DopeAssetName!, inBundle:bundle, compatibleWithTraitCollection: nil)
+        
+        var retrievedImage:UIImage? = nil
+        if let url = NSBundle(forClass: DopamineKit.self).URLForResource("DopamineKit", withExtension: "bundle"){
+            let dkitBundle = NSBundle(URL: url)
+            retrievedImage = UIImage(named: icon.DopeAssetName!, inBundle:dkitBundle, compatibleWithTraitCollection: nil)
+        }
         
         super.init(title: title, subtitle: subtitle, image: retrievedImage, backgroundColor: backgroundColor, didTapBlock: didTapBlock)
         self.position = .Bottom
@@ -68,8 +76,10 @@ public class CandyBar: Banner {
     
     /// Shows the candybar. If a view is specified, the candybar will be displayed at the top of that view, otherwise at top of the top window. If a `duration` is specified, the candybar dismisses itself automatically after that duration elapses.
     ///
-    /// - parameter view: A view the candybar will be shown in. Defaults to `nil`, which in turn means it will be shown in the top window. 
-    /// - parameter duration: A time interval, after which the banner will dismiss itself. Defaults to `nil`, which in turn means the user will have to tap-to-dismiss or use candybar.dismiss()@{link dismiss()}
+    /// - parameter:
+    ///     - view?: A view the candybar will be shown in. Defaults to `nil`, which in turn means it will be shown in the top window.
+    ///     - duration?: A time interval, after which the banner will dismiss itself. Defaults to `nil`, which in turn means the user will have to tap-to-dismiss or the function `candybar.dismiss()` can be used.
+    ///
     public override func show(view: UIView? = Banner.topWindow(), duration: NSTimeInterval? = nil) {
         guard let view = view else {
             print("[CandyBar]: Could not find view. Aborting.")
@@ -87,8 +97,12 @@ public class CandyBar: Banner {
     
     /// This function takes a hex string and returns a UIColor
     ///
-    /// - parameter hex: A hex string with either format `"#ffffff"` or `"ffffff"` or `"#FFFFFF"`
-    /// - returns: The corresponding UIColor for valid hex strings, `UIColor.grayColor()` otherwise
+    /// - parameters:
+    ///     - hex: A hex string with either format `"#ffffff"` or `"ffffff"` or `"#FFFFFF"`.
+    ///
+    /// - returns: 
+    ///     The corresponding UIColor for valid hex strings, `UIColor.grayColor()` otherwise.
+    ///
     public static func hexStringToUIColor (hex:String) -> UIColor {
         var cString:String = hex.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet() as NSCharacterSet).uppercaseString
         

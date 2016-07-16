@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>DopamineKit-DopamineKit.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>DopamineKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -22,12 +27,17 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>2C357AB1440DA586D88F62D5A3A3ADF8</key>
+		<key>9C0299C16F06DDEEBB3DFEECF800C246</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9C0299C16F06DDEEBB3DFEECF800C246</key>
+		<key>ABCAAAA0F071A5C8417292CDC8777782</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B876F103B31852EDF622D17D226AD81F</key>
 		<dict>
 			<key>primary</key>
 			<true/>

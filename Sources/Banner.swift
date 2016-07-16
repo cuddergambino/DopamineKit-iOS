@@ -1,9 +1,12 @@
 //
 //  Banner.swift
+//  Used as the base class for CandyBar.swift
+//
 //
 //  Created by Harlan Haskins on 7/27/15.
 //  Copyright (c) 2015 Bryx. All rights reserved.
 //
+
 
 import UIKit
 
@@ -269,7 +272,11 @@ public class Banner: UIView {
         let constraintFormat = "H:\(leftConstraintText)-(15)-[labelView]-(8)-|"
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addConstraints(NSLayoutConstraint.defaultConstraintsWithVisualFormat(constraintFormat, views: views))
-        contentView.addConstraints(NSLayoutConstraint.defaultConstraintsWithVisualFormat("V:|-(>=10)-[imageView]-(>=10)-|", views: views))
+        if image == nil {
+            contentView.addConstraints(NSLayoutConstraint.defaultConstraintsWithVisualFormat("V:|-(>=10)-[labelView]-(>=10)-|", views: views))
+        } else {
+            contentView.addConstraints(NSLayoutConstraint.defaultConstraintsWithVisualFormat("V:|-(>=10)-[imageView]-(>=10)-|", views: views))
+        }
         backgroundView.addConstraints(NSLayoutConstraint.defaultConstraintsWithVisualFormat("H:|[contentView]-(<=1)-[labelView]", options: .AlignAllCenterY, views: views))
         
         for view in [titleLabel, detailLabel] {

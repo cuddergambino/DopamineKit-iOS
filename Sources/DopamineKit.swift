@@ -7,27 +7,12 @@
 //
 
 import Foundation
-
-#if os(iOS)
-    
-    import UIKit
+import UIKit
     
 let deviceUUID = UIDevice.currentDevice().identifierForVendor!.UUIDString
 let clientOSVersion = UIDevice.currentDevice().systemVersion
-let clientSDKVersion = "3.1.0"
-let clientOS = "iOS-Swift"
-    
-    
-#elseif os(OSX)
-    
-    import AppKit
-    
-let deviceUUID = NSProcessInfo().globallyUniqueString
-let clientOSVersion = NSProcessInfo().operatingSystemVersionString
-let clientSDKVersion = "0.0.1"
-let clientOS = "OSX-Swift"
-    
-#endif
+let clientSDKVersion = "4.0.0.beta"
+let clientOS = "iOS"
 
 // constants
 let DopamineDefaultsKey = "DopaminePrimaryIdentity"
@@ -35,8 +20,9 @@ let DopamineAPIURL = "https://api.usedopamine.com/v3/app/"
 
 @objc
 public class DopamineKit : NSObject{
+    
     // Singleton configuration
-    static public let instance: DopamineKit = DopamineKit()
+    public static let instance: DopamineKit = DopamineKit()
     private let baseURL = NSURL(string: DopamineAPIURL)!
     private let session = NSURLSession.sharedSession()
     
@@ -45,24 +31,28 @@ public class DopamineKit : NSObject{
     
     
     /// This function sends an asynchronous tracking call for the specified actionID
+    ///
     /// - parameters:
-    ///     - actionID: the name of the action
-    ///     - metaData: Default `nil` - metadata as a set of key-value pairs that can be sent with a tracking call. The value should JSON formattable like an NSNumber or NSString.
-    ///     - secondaryIdentity: Default `nil` - an additional idetification string
-    ///     - callback: A callback function with the track HTTP response code passed in as a String. Defaults to an empty function
-    public static func track(actionID: String, metaData: [String: AnyObject]? = nil, secondaryIdentity: String? = nil, callback: (String -> ()) = {_ in} ){
-        self.instance.sendRequestFor("track", actionID: actionID, metaData: metaData, secondaryIdentity: secondaryIdentity, callback: callback)
+    ///     - actionID: Descriptive name of the action.
+    ///     - metaData?: Event info as a set of key-value pairs that can be sent with a tracking call. The value should JSON formattable like an NSNumber or NSString. Defaults to `nil`.
+    ///     - secondaryIdentity?: An additional idetification string. Defaults to `nil`.
+    ///     - completion?: Mostly used for debugging, it is a closure with the track HTTP response code passed in as a `String`. Defaults to an empty closure.
+    ///
+    public static func track(actionID: String, metaData: [String: AnyObject]? = nil, secondaryIdentity: String? = nil, completion: (String) -> () = {_ in} ){
+        self.instance.sendRequest("track", actionID: actionID, metaData: metaData, secondaryIdentity: secondaryIdentity, timeout: 2.5, completion: completion)
     }
     
     /// This function sends an asynchronous reinforcement call for the specified actionID
+    ///
     /// - parameters:
-    ///     - actionID: the name of the action
-    ///     - metaData: Default `nil` - metadata as a set of key-value pairs that can be sent with a tracking call. The value should JSON formattable like an NSNumber or NSString.
-    ///     - secondaryIdentity: Default `nil` - an additional idetification string
-    ///     - timeoutSeconds: Default 2.0 - the timeout in seconds for the connection
-    ///     - callback: A callback function with the reinforcement response passed in as a String
-    public static func reinforce(actionID: String, metaData: [String: AnyObject]? = nil, secondaryIdentity: String? = nil, timeoutSeconds: Float = 2.0, callback: String -> ()) {
-        self.instance.sendRequestFor("reinforce", actionID: actionID, metaData: metaData, secondaryIdentity: secondaryIdentity, callback: callback)
+    ///     - actionID: Descriptive name of the action.
+    ///     - metaData?: Event info as a set of key-value pairs that can be sent with a tracking call. The value should JSON formattable like an NSNumber or NSString. Defaults to `nil`.
+    ///     - secondaryIdentity?: An additional idetification string. Defaults to `nil`.
+    ///     - timeoutSeconds?: Default 2.0 - the timeout in seconds for the connection
+    ///     - completion: A closure with the reinforcement response passed in as a `String`.
+    ///
+    public static func reinforce(actionID: String, metaData: [String: AnyObject]? = nil, secondaryIdentity: String? = nil, timeout: NSTimeInterval! = 2.5, completion: (String) -> ()) {
+        self.instance.sendRequest("reinforce", actionID: actionID, metaData: metaData, secondaryIdentity: secondaryIdentity, timeout: timeout, completion: completion)
         
         // Set variables for Tutorial reinforcements
         self.requestContainedMetadata = !(metaData==nil)
@@ -70,17 +60,37 @@ public class DopamineKit : NSObject{
         
     }
     
+    
+    /// Initializes the DopamineKit singleton. 
+    /// Sets the path for the credential file, which can be changed by DopamienKit.instance.propertyListPath = "path/to/dopamine/creds".
+    ///
+    private override init() {
+        super.init()
+        // load configuration details from bundled plist file
+        // note: in XCTests, point propertyListPath to a file in the test bundle i.e.
+        //      DopamineKit.instance.propertyListPath = NSBundle(forClass: self.dynamicType).pathForResource("DopamineProperties", ofType: "plist")!
+        if (self.propertyListPath == ""){
+            // set the plist path to the default (main bundle)
+            if let path = NSBundle.mainBundle().pathForResource("DopamineProperties", ofType: "plist") {
+                self.propertyListPath = path
+            }
+        }
+    }
         
     
-    /// This function generates tutorial text to help devs using the Demo App become familiar with the `reinforce()` function. There is no effect if using an app registered on UseDopamine.com or if inProduction is set to true for the Demo App
+    /// This function generates tutorial text to help devs using the Demo App become familiar with the `reinforce()` function. 
     ///
-    /// - parameter primaryText: The title text for a CandyBar if not in tutorial mode
-    /// - parameter secondaryText: The subtitle text for a CandyBar if not in tutorial mode
+    /// There is no effect if using an app registered on UseDopamine.com or if inProduction is set to true for the Demo App credentials
+    ///
+    /// - parameters:
+    ///     - primaryText: The title text for a CandyBar if not in tutorial mode.
+    ///     - secondaryText: The subtitle text for a CandyBar if not in tutorial mode.
+    ///
     private static func ifDemoAppGetTutorialText(primaryText:String? = nil, secondaryText:String? = nil)
         -> (String?, String?)
     {
-        let isDemoApp = (self.instance.requestData["appID"] as! String) == "570ffc491b4c6e9869482fbf"
-        let inProduction = (self.instance.requestData["secret"] as! String) == "20af24a85fa00938a5247709fed395c31c89b142"
+        let isDemoApp = (self.instance.configurationData["appID"] as! String) == "570ffc491b4c6e9869482fbf"
+        let inProduction = (self.instance.configurationData["secret"] as! String) == "20af24a85fa00938a5247709fed395c31c89b142"
         if(isDemoApp && !inProduction  ){   // Is the demo app AND `inProduction` mode is set to false
             if(!self.requestContainedMetadata){
                 return ("Add metadata yo", "Analyzing and reinforcing behaviors is so easy with Dopamine!")
@@ -97,89 +107,86 @@ public class DopamineKit : NSObject{
         }
     }
     
-    private override init() {
-        super.init()
-    }
     
-    private func sendRequestFor(callType: String, actionID: String, metaData: [String: AnyObject]? = nil, secondaryIdentity: String? = nil, callback: String -> ()) {
-        // create dictionary container for api call data
-        var data = self.requestData
-        var jsonData: NSData
+    /// This function sends a request to the DopamineAPI
+    ///
+    /// - parameters:
+    ///     - callType: "track" or "reinforce".
+    ///     - actionID: Descriptive name of the action.
+    ///     - metaData?: Event info as a set of key-value pairs that can be sent with a tracking call. The value should JSON formattable like an NSNumber or NSString. Defaults to `nil`.
+    ///     - secondaryIdentity?: An additional idetification string. Defaults to `nil`.
+    ///     - completion: A closure with the reinforcement response passed in as a `String`.
+    ///
+    private func sendRequest(callType: String, actionID: String, metaData: [String: AnyObject]? = nil, secondaryIdentity: String? = nil, timeout:NSTimeInterval, completion: String -> ()) {
         
-        data["actionID"] = actionID
-        data["UTC"] = NSDate().timeIntervalSince1970 * 1000
-        data["localTime"] = Double(NSTimeZone.defaultTimeZone().secondsFromGMT) +
-            NSDate().timeIntervalSince1970 * 1000
+        // create dictionary for api call
+        var payload = self.configurationData
+        payload["actionID"] = actionID
+        payload["metaData"] = metaData
+        payload["secondaryIdentity"] = secondaryIdentity
+        let curTime = NSDate().timeIntervalSince1970
+        payload["UTC"] = curTime * 1000
+        payload["localTime"] = ( curTime + Double(NSTimeZone.defaultTimeZone().secondsFromGMT) ) * 1000
         
-        // optional metadata and secondary indentity
-        if metaData != nil {
-            data["metaData"] = metaData as [String: AnyObject]!
-        }
-        
-        if secondaryIdentity != nil {
-            data["secondaryIdentity"] = secondaryIdentity!
-        }
-        
-        do {
-            jsonData = try NSJSONSerialization.dataWithJSONObject(data, options: .PrettyPrinted)
-        } catch {
-            NSLog("[DopamineKit]: Error composing api request type:(\(callType)) with data:(\(data))")
-            return
-        }
-        
-        let url = NSURL(string: callType, relativeToURL: baseURL)!
-        let request = NSMutableURLRequest(URL: url)
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.HTTPMethod = "POST"
-        request.HTTPBody = jsonData
-        
-        // set up request handler
-        let task = session.dataTaskWithRequest(request) { data, response, error in
-            // check if request failed locally from device side
-            if let httpError = error as NSError! {
-                NSLog("[DopamineKit]: Error while sending request - '\(httpError.localizedDescription)'")
-                return
-            // check for good server (ActionHero) response
-            } else if let httpResponse = response as? NSHTTPURLResponse where httpResponse.statusCode != 200 {
-                NSLog("[DopamineKit]: Error while receiving response - Status Code:\(httpResponse.statusCode)")
-                if(data != nil){
-                    do {
-                        let dict = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions()) as! [String: AnyObject]
-                        NSLog("[DopamineKit]: Error while receiving response - Response json data: \(dict)")
-                    } catch {
-                        NSLog("[DopamineKit]: Error while receiving response - Response data: \(data)")
+        if let url = NSURL(string: callType, relativeToURL: baseURL){
+            do {
+                let request = NSMutableURLRequest(URL: url)
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                request.HTTPMethod = "POST"
+                request.timeoutInterval = timeout
+                let jsonPayload = try NSJSONSerialization.dataWithJSONObject(payload, options: NSJSONWritingOptions())
+                request.HTTPBody = jsonPayload
+                
+                // set up request handler
+                let task = session.dataTaskWithRequest(request) { responseData, urlResponse, error in
+                    if let httpError = error as NSError! {
+                        // handle bad request
+                        DopamineKit.DebugLog("Error while sending \(callType) request - '\(httpError.localizedDescription)'")
+                        return
+                    } else if let httpResponse = urlResponse as? NSHTTPURLResponse where httpResponse.statusCode != 200 {
+                        // handle bad response
+                        DopamineKit.DebugLog("Error while receiving \(callType) response - Status Code:\(httpResponse.statusCode)")
+                        return
+                    } else if let data = responseData{
+                        // handle good response
+                        self.handleResponse(callType, data: data, completion: completion)
+                        return
+                    } else {
+                        // catch all, should never reach here
+                        DopamineKit.DebugLog("Error while receiving \(callType) response - no data")
                         return
                     }
                 }
-                return
-            // handle good response
-            } else{
-                self.handleResponse(callType, data: data, callback: callback)
+                // send request
+                DopamineKit.DebugLog("Sending \(callType) request with payload: \(payload.description)")
+                task.resume()
+                
+            } catch {
+                DopamineKit.DebugLog("Error composing \(callType) request with payload:(\(payload.description))")
                 return
             }
+        } else {
+            DopamineKit.DebugLog("Error with base url:(\(baseURL))")
         }
-        
-        // send request
-        NSLog("[DopamineKit]: sending request \(data.description)")
-        task.resume()
         
     }
     
-    // Only use callback for good responses
-    private func handleResponse(callType: String, data: NSData?, callback: String -> ()) {
+    // Only use completion for good responses
+    private func handleResponse(callType: String, data: NSData?, completion: String -> ()) {
         
-        // parse the json response
-        let jsonOptions = NSJSONReadingOptions()
-        var dict: [String: AnyObject] = [:]
+        // parse the json response into a dictionary
+        var response: [String: AnyObject] = [:]
         
         do {
-            dict = try NSJSONSerialization.JSONObjectWithData(data!, options: jsonOptions) as! [String: AnyObject]
-            if(dict.keys.contains("error") || dict.keys.contains("errors")){
-                NSLog("[DopamineKit]: Error in response - Response data: \(dict)")
+            // turn the dictionary into a json object
+            response = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions()) as! [String: AnyObject]
+            DopamineKit.DebugLog("DopamineKit \(callType) response:\(response)")
+            if(response.keys.contains("errors")){
+                DopamineKit.DebugLog("[DopamineKit]: Error in \(callType) response - Response data: \(response["errors"])")
                 return
             }
         } catch {
-            NSLog("[DopamineKit]: Error reading dopamine response data: \(data)")
+            DopamineKit.DebugLog("[DopamineKit]: Error reading dopamine \(callType) response data: \(data)")
             return
         }
         
@@ -187,74 +194,68 @@ public class DopamineKit : NSObject{
         var reinforcementDecision = ""
         switch (callType){
         case "reinforce":
-            NSLog("DopamineKit server response:\(dict)")
-            if let reinforcer = dict["reinforcementDecision"] as? String{
+            if let reinforcer = response["reinforcementDecision"] as? String{
                 reinforcementDecision = reinforcer
             }
             break
             
         case "track":
-            NSLog("DopamineKit server response:\(dict)")
-            if let status = dict["status"] as? Int{
+            if let status = response["status"] as? Int{
                 reinforcementDecision = status.description
             }
             break
             
         default:
-            NSLog("[DopamineKit]: Error - unhandled response for \(callType): \(dict)")
+            DopamineKit.DebugLog("[DopamineKit]: Error - unhandled response for \(callType): \(response)")
             return
         }
         
-        callback(reinforcementDecision)
+        completion(reinforcementDecision)
         
     }
     
-    // compile the static elements of the request call
     public var propertyListPath:String = ""
-    lazy var requestData: [String: AnyObject] = {
-        let DopaminePlistFile = "DopamineProperties"
-        
+    
+    // compile the static elements of the request call
+    lazy var configurationData: [String: AnyObject] = {
         var dict: [String: AnyObject] = [
             "clientOS": "iOS-Swift",
             "clientOSVersion": clientOSVersion,
             "clientSDKVersion": clientSDKVersion,
             ]
         
-        // load configuration details from bundled plist file
-        if (self.propertyListPath == ""){
-            // set the plist path to the default (main bundle)
-            if let path = NSBundle.mainBundle().pathForResource(DopaminePlistFile, ofType: "plist") {
-                self.propertyListPath = path
-            } else {
-                self.propertyListPath = ""
-            }
+        // get values from .plist
+        if let dopaminePlist = NSDictionary(contentsOfFile: self.propertyListPath) as? [String: AnyObject] {
             
+            if let inProduction = dopaminePlist["inProduction"] as? Bool {
+                for key in ["appID", "versionID"] {
+                    if let value = dopaminePlist[key] as? String {
+                        dict[key] = value
+                    } else {
+                        DopamineKit.DebugLog("Error - bad \((key)) in \((self.propertyListPath))")
+                    }
+                }
+                if(inProduction){
+                    if let secret = dopaminePlist["productionSecret"] as? String {
+                        dict["secret"] = secret
+                    } else {
+                        DopamineKit.DebugLog("Error - bad (productionSecret) in 'DopamineProperties.plist'")
+                    }
+                } else {
+                    if let secret = dopaminePlist["developmentSecret"] as? String {
+                        dict["secret"] = secret
+                    } else {
+                        DopamineKit.DebugLog("Error - bad (developmentSecret) in 'DopamineProperties.plist'")
+                    }
+                }
+            } else {
+                DopamineKit.DebugLog("Error - bad (productionSecret) in 'DopamineProperties.plist'")
+            }
+        } else {
+            DopamineKit.DebugLog("[DopamineKit]: Error - cannot find credentials in (\(self.propertyListPath))")
         }
         
-        // save values
-        if let config = NSDictionary(contentsOfFile: self.propertyListPath) as? [String: AnyObject] {
-            for key in ["appID", "versionID"] {
-                if let value = config[key] {
-                    dict[key] = value
-                } else {
-                    NSLog("[DopamineKit]: Error - bad appID or versionID in 'DopamineProperties.plist'")
-                }
-            }
-            
-            NSLog("DopamineKit credentials:\(dict)")
-            
-            // set the development/production secret key
-            if config["inProduction"] as! Bool {
-                dict["secret"] = config["productionSecret"] as! String
-            } else {
-                dict["secret"] = config["developmentSecret"] as! String
-            }
-            
-            dict["primaryIdentity"] = self.getPrimaryIdentity()
-            
-        } else {
-            NSLog("[DopamineKit]: Error - bad configuration in 'DopamineProperties.plist'")
-        }
+        dict["primaryIdentity"] = self.getPrimaryIdentity()
         
         return dict
     }()
@@ -274,4 +275,14 @@ public class DopamineKit : NSObject{
         }
     }
     
+    internal static func DebugLog(message: String,  fileName: String = #file, function: String =  #function, line: Int = #line) {
+        //#if DEBUG
+            var functionSignature:String = function
+            if let parameterNames = functionSignature.rangeOfString("\\((.*?)\\)", options: .RegularExpressionSearch){
+                functionSignature.replaceRange(parameterNames, with: "()")
+            }
+            NSLog("[\((fileName as NSString).lastPathComponent):\(line):\(functionSignature)] - \(message)")
+        //#endif
+    }
+
 }

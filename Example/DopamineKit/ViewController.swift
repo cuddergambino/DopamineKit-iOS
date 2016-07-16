@@ -15,8 +15,6 @@ class ViewController: UIViewController {
     var action1Button:UIButton = UIButton()
     var trackedActionButton:UIButton = UIButton()
     
-    var emptyView:UIView = UIView()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         loadBasicUI()
@@ -25,7 +23,7 @@ class ViewController: UIViewController {
     func action1Performed(){
         
         // Reinforce the action to make it sticky!!
-        DopamineKit.reinforce("action1", callback: {response in
+        DopamineKit.reinforce("action1", completion: {response in
             // So we don't run on the main thread
             dispatch_async(dispatch_get_main_queue(), {
                 
@@ -85,39 +83,35 @@ class ViewController: UIViewController {
         let viewSize = self.view.frame.size
         let viewCenter = self.view.center
         
-        // Dopamine icon
-        
-//        let dopamineIcon = UIImage(named: "BrainLogo", inBundle: NSBundle, compatibleWithTraitCollection: nil)
-        
-        let bundle = NSBundle.init(forClass: DopamineKit.self)
-        let dopamineIcon = UIImage(named:"DopamineLogo", inBundle: bundle, compatibleWithTraitCollection: nil)
+        // Dopamine icon up top
+        let dopamineIcon = UIImage(named:"DopamineLogo")
         
         let imageView = UIImageView(image: dopamineIcon)
         imageView.center = CGPointMake(viewSize.width/2, 100)
         self.view.addSubview(imageView)
         
-        // Response label
+        // Response label below dopamine icon
         responseLabel = UILabel.init(frame: CGRectMake(0, 150, viewSize.width, 50))
         responseLabel.text = "Click a button below!"
         responseLabel.textAlignment = NSTextAlignment.Center
         self.view.addSubview(responseLabel)
         
-        // Reinforced action button
+        // Button to represent some user action to Reinforce
         action1Button = UIButton.init(frame: CGRectMake(0, 0, viewSize.width/3, viewSize.width/6+10))
         action1Button.center = CGPointMake(viewSize.width/4, viewCenter.y)
         action1Button.layer.cornerRadius = 5
-        action1Button.setTitle("Reinforce some triggered action", forState: UIControlState.Normal)
+        action1Button.setTitle("Reinforce a user action", forState: UIControlState.Normal)
         action1Button.titleLabel?.lineBreakMode = NSLineBreakMode.ByWordWrapping
         action1Button.titleLabel?.textAlignment = NSTextAlignment.Center
         action1Button.backgroundColor = UIColor.init(red: 51/255.0, green: 153/255.0, blue: 51/255.0, alpha: 1.0)
         action1Button.addTarget(self, action: #selector(ViewController.action1Performed), forControlEvents: UIControlEvents.TouchUpInside)
         self.view.addSubview(action1Button)
         
-        // Tracked action button
+        // Button to represent some user action to Track
         trackedActionButton = UIButton.init(frame: CGRectMake(0, 0, viewSize.width/3, viewSize.width/6+10))
         trackedActionButton.center = CGPointMake(viewSize.width/4*3, viewCenter.y)
         trackedActionButton.layer.cornerRadius = 5
-        trackedActionButton.setTitle("Track some other action", forState: UIControlState.Normal)
+        trackedActionButton.setTitle("Track a user action", forState: UIControlState.Normal)
         trackedActionButton.titleLabel?.lineBreakMode = NSLineBreakMode.ByWordWrapping
         trackedActionButton.titleLabel?.textAlignment = NSTextAlignment.Center
         trackedActionButton.backgroundColor = UIColor.init(red: 204/255.0, green: 51/255.0, blue: 51/255.0, alpha: 1.0)
